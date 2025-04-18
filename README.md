@@ -16,22 +16,20 @@ audible speech. Two important protocols, SMTP and IMAP, are used in email commun
 of emails, while IMAP is responsible for retrieving and managing messages. The outcome of this work is the development 
 of the “Blind-Friendly Email System” prototype.
 
-**Technologies:**                                                                                                                                                                      
+**Technologies:**                                                                                                                                                   
 Frontend : HTML,CSS,JS
-
 Backend : Python
-
 Framework : Flask
-
 Database : PostgreSQL
 
 **Execution:**
 1. clone the repository
-2. Set the database on pgadmin4
-3. Install required packages,libraries
-4. run the code: 
+    git clone https://github.com/Suprathika-Ramisetti/Voice-Based-email-for-visual-impairment-people-using-AI.git
+3. Set the database on pgadmin4
+4. Install required packages,libraries
+5. run the code: 
      python app.py or py app.py
-5. Follow the link
+6. Follow the link
    http://127.0.0.1:5000
 
 **Result:**
