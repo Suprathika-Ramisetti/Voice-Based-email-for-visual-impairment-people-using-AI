@@ -34,7 +34,7 @@ Database : PostgreSQL
 5. run the code: 
      python app.py or py app.py
 6. Follow the link
-7. 
+ 
    http://127.0.0.1:5000
 
 **Result:**
