@@ -1,42 +1,39 @@
 # Voice-Based-email-for-visual-impairment-people-using-AI
-This is my final year project which is "A voice-controlled email sender system that allows users to compose and send emails,check inbox,trash,sent emails by searching also using speech commands.
+This is my final year project — a voice-controlled email system that enables users to compose, send, and manage emails using speech commands. It supports accessing the inbox, sent items, trash, and searching emails by voice.
 
-**Abstract:**
+**Abstract**
 
-E-mail is a widely used method of communication, serving both professional and social purposes. However, 
-for blind users, traditional email applications present significant challenges, particularly since they must rely on memory 
-to navigate through the keyboard or keypad. The proposed system aims to address this issue by offering a voice-driven 
-email platform, enabling blind users to send, receive, and view emails without needing to memorize a keyboard layout. 
-This voice-based system provides access to various email folders, such as the inbox, sent items, and trash, all through 
-spoken commands. The integration of a speech recognition model helps in recognizing both the language and voice of 
-the user. By transcribing spoken words into written text accurately, the system allows users to interact with their email 
-accounts hands-free. The process of converting speech to text is known as "speech-to-text" or "automatic speech 
-recognition" (ASR). Additionally, Google Text-to-Speech (GTTS) technology is employed to convert the input text into 
-audible speech. Two important protocols, SMTP and IMAP, are used in email communication: SMTP handles the sending 
-of emails, while IMAP is responsible for retrieving and managing messages. The outcome of this work is the development 
-of the “Blind-Friendly Email System” prototype.
+This project is a voice-driven email system for visually impaired users, enabling them to send, receive, and manage emails using spoken commands. It uses speech recognition to convert speech to text and Google Text-to-Speech (GTTS) for audio responses. The system uses SMTP to send emails and IMAP to retrieve them, providing a hands-free, accessible, and user-friendly communication platform.
 
-**Technologies:**                                                                                                                                                   
-Frontend : HTML,CSS,JS
+**Technologies**
 
-Backend : Python
+Frontend: HTML, CSS, JavaScript
 
-Framework : Flask
+Backend: Python
 
-Database : PostgreSQL
+Framework: Flask
 
-**Execution:**
-1. Clone the repository
+Database: PostgreSQL
+
+**Execution**
+
+1.Clone the repository
+
+   git clone https://github.com/Suprathika-Ramisetti/Voice-Based-email-for-visual-impairment-people-using-AI.git
    
-    git clone https://github.com/Suprathika-Ramisetti/Voice-Based-email-for-visual-impairment-people-using-AI.git
-3. Set the database on pgadmin4
-4. Install required packages,libraries
-5. Run the code:
+2.Set up the database using pgAdmin4
+
+3.Install the required packages and libraries
+
+   pip install -r requirements.txt
    
-     python app.py or py app.py
-7. Follow the link
- 
-   http://127.0.0.1:5000
+4.Run the application
+
+python app.py
+
+5.Open the following link in your browser
+
+http://127.0.0.1:5000
 
 **Result:**
 
@@ -51,4 +48,28 @@ Database : PostgreSQL
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/9b36ed7d-b0f2-4655-8093-0e4a068f5b9b" />
 
+
+**Features:**
+
+-Compose, send, and search emails using voice commands
+
+-Access inbox, sent, and trash folders hands-free
+
+-Speech-to-text conversion using Speech Recognition API
+
+-Text-to-speech audio feedback using Google Text-to-Speech (GTTS)
+
+-Email sending with SMTP and retrieval with IMAP
+
+-Accessible interface for visually impaired users
+
+**Learnings**
+
+-Hands-on experience integrating Speech Recognition and Text-to-Speech technologies
+
+-Practical knowledge of Flask web framework and PostgreSQL database integration
+
+-Applied concepts of SMTP and IMAP email protocols
+
+-Developed an accessible, AI-based communication platform
 
