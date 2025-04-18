@@ -2,6 +2,7 @@
 This is my final year project which is "A voice-controlled email sender system that allows users to compose and send emails,check inbox,trash,sent emails by searching also using speech commands.
 
 **Abstract:**
+
 E-mail is a widely used method of communication, serving both professional and social purposes. However, 
 for blind users, traditional email applications present significant challenges, particularly since they must rely on memory 
 to navigate through the keyboard or keypad. The proposed system aims to address this issue by offering a voice-driven 
@@ -15,7 +16,7 @@ audible speech. Two important protocols, SMTP and IMAP, are used in email commun
 of emails, while IMAP is responsible for retrieving and managing messages. The outcome of this work is the development 
 of the “Blind-Friendly Email System” prototype.
 
-**Technologies:**
+**Technologies:**                                                                                                                                                                      
 Frontend : HTML,CSS,JS
 Backend : Python
 Framework : Flask
@@ -34,9 +35,12 @@ Database : PostgreSQL
 
 <img width="891" alt="image" src="https://github.com/user-attachments/assets/89b66362-1d8e-474f-95d6-9f8a2c26a18c" />
 
+
 <img width="891" alt="image" src="https://github.com/user-attachments/assets/bf847330-ada2-40d7-8bed-bcddc361ae86" />
 
+
 <img width="891" alt="image" src="https://github.com/user-attachments/assets/cdbd5dea-2dc8-434f-9d8a-1447e0f9d532" />
+
 
 <img width="891" alt="image" src="https://github.com/user-attachments/assets/9b36ed7d-b0f2-4655-8093-0e4a068f5b9b" />
 
