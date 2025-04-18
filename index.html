@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Email Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dash.css') }}">
+
+</head>
+<body>
+    <h2>Voice-Based Email Sender</h2>
+    <button onclick="startProcess()">Start</button>
+    <p id="status">Click the button and follow the instructions.</p>
+
+    <script>
+        let email = "", subject = "", message = "";
+        let step = 0;
+        let recognition;
+
+        function startProcess() {
+            step = 0;
+            email = subject = message = ""; // Reset values
+            document.getElementById("status").innerText = "Listening...";
+            speak("Please say the recipient's email.");
+            setTimeout(startListening, 2000); // Wait before starting recognition
+        }
+
+        function startListening() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                document.getElementById("status").innerText = "Your browser does not support speech recognition.";
+                speak("Your browser does not support speech recognition.");
+                return;
+            }
+
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                let speechText = event.results[0][0].transcript;
+                console.log("Recognized:", speechText);
+
+                if (step === 0) {
+                    email = formatEmail(speechText);
+                    console.log("Formatted Email:", email);
+                    if (!validateEmail(email)) {
+                        document.getElementById("status").innerText = "Invalid email. Try again.";
+                        speak("Invalid email. Please try again.");
+                        return;
+                    }
+                    document.getElementById("status").innerText = "Now, say the subject...";
+                    speak("Email received. Now, say the subject.");
+                    step++;
+                    setTimeout(startListening, 2000);
+                } else if (step === 1) {
+                    subject = speechText;
+                    document.getElementById("status").innerText = "Now, say the message...";
+                    speak("Subject received. Now, say the message.");
+                    step++;
+                    setTimeout(startListening, 2000);
+                } else if (step === 2) {
+                    message = speechText;
+                    document.getElementById("status").innerText = "Confirming details...";
+                    speak(`Your email is ${email}. Subject is ${subject}. Message is ${message}. Do you want to send this email? Say yes or no.`);
+                    step++;
+                    setTimeout(startListening, 5000);
+                } else if (step === 3) {
+                    if (speechText.toLowerCase().includes("yes")) {
+                        document.getElementById("status").innerText = "Sending email...";
+                        speak("Sending email now.");
+                        sendToBackend();
+                    } else {
+                        document.getElementById("status").innerText = "Email canceled.";
+                        speak("Email canceled.");
+                    }
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Speech Recognition Error:", event.error);
+                document.getElementById("status").innerText = "Error: " + event.error;
+                speak("Error occurred. Please try again.");
+            };
+
+            recognition.onspeechend = function() {
+                recognition.stop();
+            };
+        }
+
+        function speak(text) {
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "en-US";
+            window.speechSynthesis.speak(speech);
+        }
+
+        function formatEmail(text) {
+            let email = text.toLowerCase().trim();
+
+            email = email
+                .replace(/\s*(at the rate|at|email at|symbol at)\s+/gi, "@")
+                .replace(/\s*(dot|point)\s+/gi, ".");
+
+            email = email.replace(/\s+/g, "");
+
+            let atParts = email.split("@");
+            if (atParts.length > 2) {
+                email = atParts[0] + "@" + atParts.slice(1).join("");
+            }
+
+            return email;
+        }
+
+        function validateEmail(email) {
+            const pattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+            return pattern.test(email);
+        }
+
+        function sendToBackend() {
+            fetch('/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, subject: subject, message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").innerText = data.message;
+                speak(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("status").innerText = "Failed to send email.";
+                speak("Failed to send email.");
+            });
+        }
+    </script>
+</body>
+</html>

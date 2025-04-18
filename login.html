@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice-Based Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Voice-Based Login</h2>
+
+  <button onclick="startVoiceLogin()"> Start Voice Login</button>
+  <p id="status">Click the button and follow the voice instructions.</p>
+
+  <form id="loginForm" method="POST" action="/login">
+    <label for="email">Email:</label><br>
+    <input type="email" name="email" id="email" required><br><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" name="password" id="password" required><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    let email = "", password = "";
+    let step = 0;
+    let recognition;
+
+    function startVoiceLogin() {
+      step = 0;
+      email = password = "";
+      document.getElementById("status").innerText = "Listening for email...";
+      speak("Please say your email.");
+      setTimeout(startListening, 3000);
+    }
+
+    function startListening() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        document.getElementById("status").innerText = "Speech recognition not supported.";
+        speak("Speech recognition is not supported on this browser.");
+        return;
+      }
+
+      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (recognition) recognition.abort();
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const speechText = event.results[0][0].transcript.trim();
+        console.log("Heard:", speechText);
+        console.log("Current step:", step);
+
+        if (step === 0) {
+          email = formatEmail(speechText);
+          console.log("Formatted Email:", email);
+
+          if (!validateEmail(email)) {
+            document.getElementById("status").innerText = "Invalid email. Try again.";
+            speak("Invalid email. Please try again.");
+            return;
+          }
+
+          document.getElementById("email").value = email;
+          document.getElementById("status").innerText = "Now, say your password.";
+          speak("Email received. Now, please say your password.");
+          step++;
+          setTimeout(startListening, 3000);
+
+        } else if (step === 1) {
+          password = speechText.split(" ")[0].replace(/\s+/g, '');
+          document.getElementById("password").value = password;
+          document.getElementById("status").innerText = "Confirming details...";
+
+          const confirmationMessage = `Your email is ${spellOutEmail(email)}. You said a password. Do you want to login? Say yes or no.`;
+          const utter = new SpeechSynthesisUtterance(confirmationMessage);
+          utter.lang = "en-US";
+          utter.onend = function () {
+            step++;
+            startListening(); // listen for yes/no
+          };
+          window.speechSynthesis.speak(utter);
+
+        } else if (step === 2) {
+          const answer = speechText.toLowerCase();
+          const positiveResponses = ["yes", "yeah", "yup", "ok", "okay", "sure", "haa", "ha", "avunu", "yes please"];
+          const negativeResponses = ["no", "nope", "nah", "cancel", "leda", "kadhu"];
+
+          if (positiveResponses.some(word => answer.includes(word))) {
+            console.log("Confirmed: YES");
+            document.getElementById("status").innerText = "Logging in...";
+            speak("Logging you in now.");
+            document.getElementById("loginForm").submit();
+          } else if (negativeResponses.some(word => answer.includes(word))) {
+            console.log("Confirmed: NO");
+            document.getElementById("status").innerText = "Login cancelled.";
+            speak("Login cancelled.");
+          } else {
+            console.log("Unrecognized response:", answer);
+            document.getElementById("status").innerText = "Say yes or no...";
+            speak("Didn't catch that. Please say yes to login or no to cancel.");
+            setTimeout(startListening, 3000);
+          }
+        }
+      };
+
+      recognition.onerror = function(event) {
+        console.error("Recognition Error:", event.error);
+        document.getElementById("status").innerText = "Error: " + event.error;
+        speak("Sorry, there was an error. Please try again.");
+      };
+
+      recognition.onspeechend = function() {
+        recognition.stop();
+        console.log("Speech recognition ended.");
+      };
+    }
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-US";
+      window.speechSynthesis.speak(utter);
+    }
+
+    function formatEmail(text) {
+      let email = text.toLowerCase().trim();
+
+      // Convert spoken numbers to digits
+      const numberWords = {
+        zero: "0", one: "1", two: "2", three: "3", four: "4",
+        five: "5", six: "6", seven: "7", eight: "8", nine: "9"
+      };
+      email = email.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine)\b/gi, match => {
+        return numberWords[match.toLowerCase()];
+      });
+
+      // Replace known patterns with symbols
+      email = email
+        .replace(/\s*(at the rate|symbol at|email at)\s*/gi, "@")
+        .replace(/\s+at\s+/gi, "@")
+        .replace(/\s*(dot|point)\s*/gi, ".")
+        .replace(/\s+/g, "");
+
+      // Fix misheard "gmailcom" or missing "@" case
+      if (!email.includes("@") && email.includes("gmail.com")) {
+        email = email.replace("gmail.com", "@gmail.com");
+      }
+      if (!email.includes("@") && email.includes("gmailcom")) {
+        email = email.replace("gmailcom", "@gmail.com");
+      }
+
+      // Remove extra @ if misheard
+      const parts = email.split("@");
+      if (parts.length > 2) {
+        email = parts[0] + "@" + parts.slice(1).join("");
+      }
+
+      return email;
+    }
+
+    function validateEmail(email) {
+      const pattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+      return pattern.test(email);
+    }
+
+    function spellOutEmail(email) {
+      if (!email.includes("@")) return email;
+      const [user, domain] = email.split("@");
+      return `${user.split('').join(' ')}, at, ${domain.replace(/\./g, ' dot ')}`;
+    }
+  </script>
+</body>
+</html>

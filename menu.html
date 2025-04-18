@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Menu</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <h2> Voice Assistant Menu</h2>
+
+  <button class="menu-button" onclick="location.href='/email'"> Compose</button>
+  <button class="menu-button" onclick="location.href='/inbox'"> Inbox</button>
+  <button class="menu-button" onclick="location.href='/sent'"> Sent</button>
+  <button class="menu-button" onclick="location.href='/trash'"> Trash</button>
+  <button class="menu-button" onclick="location.href='/logout'"> Logout</button>
+
+  <p id="status">🎧 Waiting for your command...</p>
+
+  <script>
+    let recognition;
+
+    // Auto-start on page load
+    window.onload = () => {
+      speak("Welcome. What would you like to do? You can say Compose, Inbox, Sent, Trash, or Logout.", () => {
+        startListening();
+      });
+    };
+
+    function speak(text, callback = null) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-US";
+      utter.onend = () => {
+        if (callback) callback(); // Start listening after speaking
+      };
+      window.speechSynthesis.speak(utter);
+    }
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        speak("Sorry, your browser doesn't support voice recognition.");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+      document.getElementById("status").innerText = "🎧 Listening...";
+
+      recognition.onresult = (event) => {
+        const speechText = event.results[0][0].transcript.toLowerCase().trim();
+        console.log("Heard:", speechText);
+        document.getElementById("status").innerText = `✅ Heard: ${speechText}`;
+        processCommand(speechText);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech error:", event.error);
+        speak("Sorry, there was a problem. Please try again.");
+        document.getElementById("status").innerText = `Error: ${event.error}`;
+      };
+
+      recognition.onend = () => {
+        console.log("Recognition ended.");
+      };
+    }
+
+    function processCommand(command) {
+      if (command.includes("compose")) {
+        speak("Opening Compose Email.", () => window.location.href = "/email");
+      } else if (command.includes("inbox")) {
+        speak("Opening Inbox.", () => window.location.href = "/inbox");
+      } else if (command.includes("sent")) {
+        speak("Opening Sent Items.", () => window.location.href = "/sent");
+      } else if (command.includes("trash")) {
+        speak("Opening Trash.", () => window.location.href = "/trash");
+      } else if (command.includes("logout")) {
+        speak("Logging you out.", () => window.location.href = "/logout");
+      } else {
+        speak("Sorry, I didn't catch that. Please say Compose, Inbox, Sent, Trash, or Logout.");
+        document.getElementById("status").innerText = "❌ Unrecognized. Try again.";
+      }
+    }
+  </script>
+</body>
+</html>

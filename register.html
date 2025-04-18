@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice-Based Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Voice-Based Registration</h2>
+  
+
+  <button onclick="startVoiceRegistration()"> Start Voice Registration</button>
+  <p id="status">Click the button and follow the voice instructions.</p>
+
+  <form id="registerForm" method="POST" action="/register">
+    <label>Name:</label><br>
+    <input type="text" name="name" id="name" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" name="email" id="email" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" id="password" required><br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <p>Already have an account? <a href="/login">Login here</a></p>
+
+  <script>
+    let step = 0;
+    let name = "", email = "", password = "";
+    let recognition;
+    const statusEl = document.getElementById("status");
+
+    function startVoiceRegistration() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        speak("Sorry, your browser doesn't support voice recognition.");
+        statusEl.textContent = "Voice recognition not supported.";
+        return;
+      }
+
+      name = email = password = "";
+      step = 0;
+
+      speak("Welcome to voice registration. Please say your full name clearly.");
+      statusEl.innerText = "Listening for name...";
+      setTimeout(startListening, 4000);
+    }
+
+    function startListening() {
+      if (recognition) recognition.abort();
+
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.start();
+
+      console.log(`🔥 Listening... current step: ${step}`);
+
+      recognition.onresult = function(event) {
+        const speechText = event.results[0][0].transcript.trim();
+        console.log(`Step ${step} - Heard:`, speechText);
+        statusEl.innerText = `Heard: ${speechText}`;
+
+        if (step === 0) {
+          name = speechText;
+          document.getElementById("name").value = name;
+          speak("Thank you. Now, please say your email like john dot doe at gmail dot com.");
+          statusEl.innerText = "Listening for email...";
+          step++;
+          setTimeout(startListening, 4000);
+
+        } else if (step === 1) {
+          email = formatEmail(speechText);
+          document.getElementById("email").value = email;
+
+          if (!validateEmail(email)) {
+            speak("That email is invalid. Please say your email again clearly.");
+            statusEl.innerText = "Invalid email. Try again.";
+            step = 1;
+            setTimeout(startListening, 4000);
+            return;
+          }
+
+          speak("Email saved. Now say your password.");
+          statusEl.innerText = "Listening for password...";
+          step++;
+          setTimeout(startListening, 4000);
+
+        } else if (step === 2) {
+          password = speechText.replace(/\s+/g, '');
+          document.getElementById("password").value = password;
+          speak(`You said name as ${name}, email as ${spellOutEmail(email)}. Say yes to submit or no to cancel.`);
+          statusEl.innerText = "Waiting for confirmation...";
+          step++;
+          setTimeout(startListening, 4000);
+
+        } else if (step === 3) {
+          const confirmation = speechText.toLowerCase();
+          console.log("🧠 Confirmation heard:", confirmation);
+
+          if (confirmation.includes("yes")) {
+            speak("Registering now.");
+            statusEl.innerText = "Submitting form...";
+            setTimeout(() => {
+              document.getElementById("registerForm").submit();
+            }, 1000);
+          } else if (confirmation.includes("no")) {
+            speak("Registration canceled.");
+            statusEl.innerText = "Canceled.";
+          } else {
+            speak("Didn't catch that. Please say yes to submit or no to cancel.");
+            statusEl.innerText = "Say yes or no...";
+            step = 3;
+            setTimeout(startListening, 4000);
+          }
+        }
+      };
+
+      recognition.onerror = function(event) {
+        console.error("❌ Speech recognition error:", event.error);
+        speak("Sorry, there was a problem. Please try again.");
+        statusEl.innerText = `Error: ${event.error}`;
+      };
+
+      recognition.onspeechend = function() {
+        recognition.stop();
+      };
+
+      recognition.onend = function() {
+        console.log(" Speech recognition ended.");
+      };
+    }
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-US";
+      window.speechSynthesis.speak(utter);
+    }
+
+    function formatEmail(text) {
+      let email = text.toLowerCase().trim();
+      email = email
+        .replace(/ at the rate | at | symbol at | email at /gi, "@")
+        .replace(/ dot | point /gi, ".")
+        .replace(/\s+/g, "");
+
+      if (!email.includes("@") && email.includes("gmail.com")) {
+        email = email.replace("gmail.com", "") + "@gmail.com";
+      }
+
+      const parts = email.split("@");
+      if (parts.length > 2) {
+        email = parts[0] + "@" + parts.slice(1).join("");
+      }
+
+      return email;
+    }
+
+    function validateEmail(email) {
+      const pattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+      return pattern.test(email);
+    }
+
+    function spellOutEmail(email) {
+      if (!email.includes("@")) return email;
+      const [user, domain] = email.split("@");
+      return `${user.split('').join(' ')}, at, ${domain.replace(/\./g, ' dot ')}`;
+    }
+  </script>
+</body>
+</html>

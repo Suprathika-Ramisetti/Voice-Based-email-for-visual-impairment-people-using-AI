@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Emails</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Search Emails</h2>
+
+  <div>
+    <label for="search-query">Enter your search query:</label>
+    <input type="text" id="search-query" placeholder="Search your emails..." />
+    <button onclick="searchEmails()">Search</button>
+  </div>
+
+  <div>
+    <button onclick="goBack()">Go Back</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    let recognition;
+
+    function speak(text, callback = null) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.onend = () => {
+        if (callback) callback();
+      };
+      window.speechSynthesis.speak(utter);
+    }
+
+    function searchEmails() {
+      const query = document.getElementById('search-query').value;
+      if (query) {
+        speak(`Searching for emails with the keyword: ${query}`);
+        const url = `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(query)}`;
+        window.open(url, "_blank");
+      } else {
+        speak("Please enter a search query.");
+      }
+    }
+
+    function logout() {
+      speak("Logging out...");
+      window.location.href = "/logout"; // Update with actual logout URL
+    }
+
+    function startVoiceAssistant() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech Recognition not supported in this browser.");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.continuous = false; // Stop after each command
+      recognition.interimResults = false; // Don't show partial results
+
+      recognition.start();
+
+      recognition.onresult = function (event) {
+        const command = event.results[0][0].transcript.toLowerCase().trim();
+        console.log("Voice Command:", command);
+
+        if (command.includes("search")) {
+          const query = command.replace("search", "").trim();
+          if (query) {
+            document.getElementById("search-query").value = query;
+            searchEmails();
+          } else {
+            speak("Please say your search query after the word 'search'.");
+          }
+        } else if (command.includes("go back")) {
+          speak("Going back to the inbox.");
+          window.location.href = "/inbox";
+        } else if (command.includes("logout")) {
+          logout();
+        } else {
+          speak("Command not recognized. Please say 'search' followed by your query, 'go back', or 'logout'.");
+        }
+
+        // Stop recognition immediately after processing the command
+        recognition.stop();
+      };
+
+      recognition.onerror = function (event) {
+        console.error("Speech Recognition Error:", event.error);
+        
+        if (event.error === 'no-speech') {
+          speak("No speech detected. Please try again.");
+        } else if (event.error === 'audio-capture') {
+          speak("Microphone not detected. Please ensure your microphone is connected.");
+        } else {
+          speak("Speech recognition error occurred. Please try again.");
+        }
+
+        recognition.stop();
+      };
+
+      recognition.onend = function () {
+        // Ensure recognition stops completely after each command
+        console.log("Speech Recognition has ended.");
+      };
+    }
+
+    function goBack() {
+      speak("Going back to inbox.");
+      window.location.href = "/inbox"; // Go back to the inbox page
+    }
+
+    window.onload = () => {
+      speak("Welcome. You can search for emails by saying 'search' followed by your query, say 'go back' to return to the inbox, or say 'logout' to log out.", () => {
+        startVoiceAssistant(); // Start listening for voice input once the page loads
+      });
+    };
+  </script>
+</body>
+</html>
