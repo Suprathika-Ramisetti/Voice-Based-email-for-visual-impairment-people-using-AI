@@ -18,8 +18,11 @@ of the “Blind-Friendly Email System” prototype.
 
 **Technologies:**                                                                                                                                                                      
 Frontend : HTML,CSS,JS
+
 Backend : Python
+
 Framework : Flask
+
 Database : PostgreSQL
 
 **Execution:**
