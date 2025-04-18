@@ -25,8 +25,8 @@ Database : PostgreSQL
 1. clone the repository
 2. Set the database on pgadmin4
 3. Install required packages,libraries
-4. run the code
-   python app.py or py app.py
+4. run the code: 
+     python app.py or py app.py
 5. Follow the link
    http://127.0.0.1:5000
 
