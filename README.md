@@ -34,3 +34,10 @@ Database : PostgreSQL
 
 <img width="941" alt="image" src="https://github.com/user-attachments/assets/89b66362-1d8e-474f-95d6-9f8a2c26a18c" />
 
+<img width="891" alt="image" src="https://github.com/user-attachments/assets/bf847330-ada2-40d7-8bed-bcddc361ae86" />
+
+<img width="989" alt="image" src="https://github.com/user-attachments/assets/cdbd5dea-2dc8-434f-9d8a-1447e0f9d532" />
+
+<img width="877" alt="image" src="https://github.com/user-attachments/assets/9b36ed7d-b0f2-4655-8093-0e4a068f5b9b" />
+
+
