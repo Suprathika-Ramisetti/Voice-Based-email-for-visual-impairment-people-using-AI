@@ -26,14 +26,15 @@ Framework : Flask
 Database : PostgreSQL
 
 **Execution:**
-1. clone the repository
+1. Clone the repository
    
     git clone https://github.com/Suprathika-Ramisetti/Voice-Based-email-for-visual-impairment-people-using-AI.git
 3. Set the database on pgadmin4
 4. Install required packages,libraries
-5. run the code: 
+5. Run the code:
+   
      python app.py or py app.py
-6. Follow the link
+7. Follow the link
  
    http://127.0.0.1:5000
 
