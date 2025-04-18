@@ -18,31 +18,36 @@ of the “Blind-Friendly Email System” prototype.
 
 **Technologies:**                                                                                                                                                   
 Frontend : HTML,CSS,JS
+
 Backend : Python
+
 Framework : Flask
+
 Database : PostgreSQL
 
 **Execution:**
 1. clone the repository
+   
     git clone https://github.com/Suprathika-Ramisetti/Voice-Based-email-for-visual-impairment-people-using-AI.git
 3. Set the database on pgadmin4
 4. Install required packages,libraries
 5. run the code: 
      python app.py or py app.py
 6. Follow the link
+7. 
    http://127.0.0.1:5000
 
 **Result:**
 
-<img width="891" alt="image" src="https://github.com/user-attachments/assets/89b66362-1d8e-474f-95d6-9f8a2c26a18c" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/89b66362-1d8e-474f-95d6-9f8a2c26a18c" />
 
 
-<img width="891" alt="image" src="https://github.com/user-attachments/assets/bf847330-ada2-40d7-8bed-bcddc361ae86" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/bf847330-ada2-40d7-8bed-bcddc361ae86" />
 
 
-<img width="891" alt="image" src="https://github.com/user-attachments/assets/cdbd5dea-2dc8-434f-9d8a-1447e0f9d532" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/cdbd5dea-2dc8-434f-9d8a-1447e0f9d532" />
 
 
-<img width="891" alt="image" src="https://github.com/user-attachments/assets/9b36ed7d-b0f2-4655-8093-0e4a068f5b9b" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/9b36ed7d-b0f2-4655-8093-0e4a068f5b9b" />
 
 
